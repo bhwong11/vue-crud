@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
+import { ref, onMounted, watchEffect, provide } from 'vue'
 import todo from './todo.vue'
 defineProps({
   msg: {
@@ -12,6 +12,7 @@ const loading = ref(false)
 const todos = ref([])
 const titleText = ref('')
 const descriptionText = ref('')
+provide('todos', todos)
 watchEffect(() => console.log('title', titleText.value))
 
 const updateText = (newValue) => (sampleText.value = newValue)
@@ -33,7 +34,7 @@ const addToDo = async () => {
   const { data, error } = await supabase
     .from('todo')
     .insert({
-      id: todos.value.length + 1,
+      id: Date.now(),
       title: titleText.value,
       description: descriptionText.value
     })

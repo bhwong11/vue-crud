@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 const props = defineProps({
   id: {
     type: Number,
@@ -15,6 +15,7 @@ const props = defineProps({
     required: true
   }
 })
+const todos = inject('todos', [])
 const loading = ref(false)
 const isEditing = ref(false)
 const titleText = ref(props.title)
@@ -35,19 +36,21 @@ const updateToDo = async () => {
     .update({ title: titleText.value, description: descriptionText.value })
     .eq('id', props.id)
     .select()
+  console.log('data', data[0])
   loading.value = false
+  todos.value = todos.value.map((todo) => {
+    if (todo.id != props.id) return todo
+    return data[0]
+  })
   toggleEdit()
   console.log('data', data[0])
-  if (!error) {
-    titleText.value = ''
-    descriptionText.value = ''
-  }
 }
 
 const deleteToDo = async () => {
   loading.value = true
   const { data, error } = await supabase.from('todo').delete().eq('id', props.id).select()
   loading.value = false
+  todos.value = todos.value.filter((todo) => todo.id != props.id)
   toggleEdit()
   console.log('data', data[0])
   if (!error) {
