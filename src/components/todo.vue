@@ -12,7 +12,11 @@ const props = defineProps({
   },
   description: {
     type: String,
-    required: true
+    required: true,
+    validator: (value) => {
+      const charMax = 1000
+      return value.length > 0 && value.length < charMax
+    }
   }
 })
 const todos = inject('todos', [])
